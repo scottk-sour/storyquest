@@ -44,7 +44,7 @@ export default function StoryDetailPage({ params }: StoryDetailProps) {
     try {
       const response = await fetch('/api/children')
       const data = await response.json()
-      setChildren(data.children || [])
+      setChildren(data.data?.children || [])
       if (data.children?.length > 0) {
         setSelectedChildId(data.children[0].id)
       }
