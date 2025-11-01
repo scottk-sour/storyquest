@@ -1,3 +1,5 @@
+import { config } from 'dotenv'
+import { resolve } from 'path'
 import { PrismaClient } from '@prisma/client'
 import storyData from './seed-story-finding-safe-place.json'
 
@@ -104,3 +106,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+

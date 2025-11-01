@@ -195,6 +195,8 @@ model Story {
   illustrator    String?
   narrator       String?
   reviewedBy     String?         // Professional who reviewed content
+  duration       Int?            // Estimated reading time in minutes
+  wordCount      Int?            // Total word count
 
   // Conversation Guides
   conversationGuides ConversationGuide[]
@@ -375,7 +377,7 @@ model QuizResult {
 model Achievement {
   id String @id @default(cuid())
 
-  name          String
+  name          String   @unique
   description   String
   icon          String
   type          AchievementType
