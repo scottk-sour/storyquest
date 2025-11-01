@@ -10,7 +10,7 @@ import { Book, Award, TrendingUp, User } from 'lucide-react'
 export default async function ChildProfilePage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const session = await auth()
 
@@ -18,9 +18,11 @@ export default async function ChildProfilePage({
     redirect('/login')
   }
 
+  const { id } = await params
+
   const child = await prisma.child.findFirst({
     where: {
-      id: params.id,
+      id,
       userId: session.user.id,
     },
     include: {
@@ -47,7 +49,7 @@ export default async function ChildProfilePage({
   })
 
   if (!child) {
-    redirect('/dashboard/children')
+    redirect('/children')
   }
 
   const completedSessions = child.readingSessions.filter((s) => s.completedAt)
@@ -61,7 +63,7 @@ export default async function ChildProfilePage({
       {/* Header */}
       <div className="mb-8">
         <Link
-          href="/dashboard/children"
+          href="/children"
           className="text-purple-600 hover:text-purple-700 text-sm mb-4 inline-block"
         >
           ← Back to Children
@@ -116,7 +118,7 @@ export default async function ChildProfilePage({
             <div className="text-center py-8">
               <User className="h-12 w-12 text-gray-400 mx-auto mb-3" />
               <p className="text-gray-600">No stories read yet</p>
-              <Link href="/dashboard/stories">
+              <Link href="/stories">
                 <Button className="mt-4">Browse Stories</Button>
               </Link>
             </div>
