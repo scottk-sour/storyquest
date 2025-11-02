@@ -1,0 +1,34 @@
+﻿{
+  "story": {
+    "title": "Luna Makes New Friends",
+    "subtitle": "A story about courage, connection, and being yourself",
+    "description": "Join Luna the little bunny as she visits the park and learns about making friends, finding courage to reach out, and discovering that being yourself is the best way to connect with others.",
+    "coverImage": "/images/stories/luna-friends/luna-friends-cover.jpg",
+    "slug": "luna-makes-new-friends",
+    "author": "StoryQuest Team",
+    "illustrator": "Emma Thompson",
+    "narrator": "AI Narrator (Warm & Gentle)",
+    "reviewedBy": "Dr. Sarah Mitchell, Child Psychologist",
+    "ageGroup": ["AGES_4_6"],
+    "category": "SOCIAL_SKILLS",
+    "duration": 12,
+    "wordCount": 920,
+    "therapeuticThemes": ["SOCIAL_SKILLS", "SELF_WORTH", "COURAGE", "RESILIENCE"],
+    "traumaTopics": ["ISOLATION", "REJECTION_FEAR"],
+    "contentWarnings": [
+      "This story gently addresses feeling lonely and nervous about making friends",
+      "Contains themes about trying new things and taking social risks",
+      "Includes positive resolution and friendship-building strategies"
+    ],
+    "healingGoals": [
+      "Building confidence in social situations",
+      "Learning that it's okay to feel nervous",
+      "Understanding that being yourself attracts real friends",
+      "Developing courage to reach out to others",
+      "Recognizing that rejection doesn't define your worth"
+    ],
+    "professionalGuidance": "This story helps children develop social courage and understand that making friends involves taking small, brave steps. It normalizes social anxiety while providing practical strategies for connection. Use the conversation guide to explore the child's own experiences with friendship and belonging.",
+    "status": "PUBLISHED",
+    "featured": true,
+    "freeForCareChildren": true,
+    "content": {
