@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+﻿/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     domains: ['localhost'],
@@ -10,9 +10,7 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverActions: {
-      allowedOrigins: ['localhost:3000'],
-    },
+    serverActions: true,
   },
 }
 
