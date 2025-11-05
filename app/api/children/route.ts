@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server'
+﻿import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { childSchema } from '@/lib/validations/child'
 import { getAgeGroup } from '@/lib/utils'
-import { handleApiError, successResponse, UnauthorizedError } from '@/lib/api-errors'
+import { handleApiError, successResponse } from '@/lib/api-errors'
 
 // GET /api/children - List all children for current user
 export async function GET(request: NextRequest) {
