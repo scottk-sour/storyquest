@@ -1,11 +1,11 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plus, User, Edit, Trash2 } from 'lucide-react'
+import { Plus, User, Trash2 } from 'lucide-react'
 import { AddChildModal } from '@/components/dashboard/AddChildModal'
 
 interface Child {
