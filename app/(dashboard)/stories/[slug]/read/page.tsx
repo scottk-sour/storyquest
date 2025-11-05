@@ -27,7 +27,7 @@ export default function ReadingPage({ params }: ReadingPageProps) {
     try {
       // For now, we'll fetch the story and session separately
       // In a real app, the session API would return everything needed
-      const storyResponse = await fetch(/api/stories/)
+      const storyResponse = await fetch(`/api/stories/${slug}`)
       const storyData = await storyResponse.json()
 
       setSession({
@@ -46,7 +46,7 @@ export default function ReadingPage({ params }: ReadingPageProps) {
 
   const handleComplete = (_endingId: string) => {
     // Show completion message and redirect
-    router.push(/stories?completed=true)
+    router.push(`/stories?completed=true`)
   }
 
   const handleExit = () => {
