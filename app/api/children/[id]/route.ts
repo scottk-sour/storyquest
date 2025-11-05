@@ -1,160 +1,76 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth'
-import { updateChildSchema } from '@/lib/validations/child'
+import bcrypt from 'bcryptjs'
+import { signupSchema } from '@/lib/validations/auth'
 import { z } from 'zod'
 
-// GET /api/children/:id - Get single child
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest) {
   try {
-    const { id } = await params
-    const session = await requireAuth()
-
-    const child = await prisma.child.findFirst({
-      where: {
-        id: id,
-        userId: session.user.id,
-      },
-      include: {
-        readingSessions: {
-          include: {
-            story: {
-              select: {
-                id: true,
-                title: true,
-                coverImage: true,
-              },
-            },
-          },
-          orderBy: { startedAt: 'desc' },
-          take: 10,
-        },
-        quizResults: {
-          orderBy: { completedAt: 'desc' },
-          take: 5,
-        },
-        achievements: {
-          include: {
-            achievement: true,
-          },
-        },
-      },
-    })
-
-    if (!child) {
-      return NextResponse.json({ error: 'Child not found' }, { status: 404 })
-    }
-
-    return NextResponse.json({ child })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    console.error('GET /api/children/:id error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch child' },
-      { status: 500 }
-    )
-  }
-}
-
-// PATCH /api/children/:id - Update child
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    const session = await requireAuth()
-
-    // Verify ownership
-    const existing = await prisma.child.findFirst({
-      where: {
-        id: id,
-        userId: session.user.id,
-      },
-    })
-
-    if (!existing) {
-      return NextResponse.json({ error: 'Child not found' }, { status: 404 })
-    }
-
     const body = await request.json()
-    const validated = updateChildSchema.parse(body)
+    const validated = signupSchema.parse(body)
 
-    const child = await prisma.child.update({
-      where: { id: id },
-      data: validated,
-      select: {
-        id: true,
-        name: true,
-        age: true,
-        avatar: true,
-        ageGroup: true,
-        careStatus: true,
-        careStatusVerified: true,
-      },
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: validated.email },
     })
 
-    return NextResponse.json({ child })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    if (error instanceof z.ZodError) {
+    if (existingUser) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: 'Email already registered' },
         { status: 400 }
       )
     }
 
-    console.error('PATCH /api/children/:id error:', error)
-    return NextResponse.json(
-      { error: 'Failed to update child' },
-      { status: 500 }
-    )
-  }
-}
+    // Hash password
+    const hashedPassword = await bcrypt.hash(validated.password, 10)
 
-// DELETE /api/children/:id - Delete child
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    const session = await requireAuth()
-
-    // Verify ownership
-    const existing = await prisma.child.findFirst({
-      where: {
-        id: id,
-        userId: session.user.id,
+    // Create user
+    const user = await prisma.user.create({
+      data: {
+        email: validated.email,
+        name: validated.name,
+        password: hashedPassword,
+        role: validated.role,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
       },
     })
 
-    if (!existing) {
-      return NextResponse.json({ error: 'Child not found' }, { status: 404 })
+    // If professional, create professional profile
+    if (validated.role === 'PROFESSIONAL') {
+      await prisma.professional.create({
+        data: {
+          userId: user.id,
+          jobTitle: '',
+          organization: '',
+          verified: false,
+        },
+      })
     }
 
-    await prisma.child.delete({
-      where: { id: id },
-    })
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    console.error('DELETE /api/children/:id error:', error)
     return NextResponse.json(
-      { error: 'Failed to delete child' },
+      {
+        success: true,
+        user,
+        message: 'Account created successfully',
+      },
+      { status: 201 }
+    )
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation error', details: error.issues },
+        { status: 400 }
+      )
+    }
+
+    console.error('Signup error:', error)
+    return NextResponse.json(
+      { error: 'Failed to create account' },
       { status: 500 }
     )
   }
