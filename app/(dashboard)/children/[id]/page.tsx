@@ -52,9 +52,9 @@ export default async function ChildProfilePage({
     redirect('/children')
   }
 
-  const completedSessions = child.readingSessions.filter((s) => s.completedAt)
+  const completedSessions = child.readingSessions.filter((s: any) => s.completedAt)
   const totalMinutes = completedSessions.reduce(
-    (acc, session) => acc + (session.duration || 0) / 60,
+    (acc: number, session: any) => acc + (session.duration || 0) / 60,
     0
   )
 
@@ -124,7 +124,7 @@ export default async function ChildProfilePage({
             </div>
           ) : (
             <div className="space-y-3">
-              {completedSessions.map((session) => (
+              {completedSessions.map((session: any) => (
                 <div
                   key={session.id}
                   className="flex items-center justify-between p-4 rounded-lg border border-gray-200"
@@ -158,7 +158,7 @@ export default async function ChildProfilePage({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {child.achievements.map((ca) => (
+              {child.achievements.map((ca: any) => (
                 <div
                   key={ca.id}
                   className="flex flex-col items-center text-center p-4 rounded-lg bg-purple-50"

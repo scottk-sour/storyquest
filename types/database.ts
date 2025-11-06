@@ -13,23 +13,27 @@ import {
   QuizResult,
   AgeGroup,
   CareStatus,
-  Role,
+  UserRole,
   StoryStatus,
-  SubscriptionTier,
-  TraumaTopics,
-  TherapeuticThemes,
+  TraumaTopic,
+  TherapeuticTheme,
 } from '@prisma/client'
 
 // Re-export Prisma enums for convenience
 export {
   AgeGroup,
   CareStatus,
-  Role,
+  UserRole,
   StoryStatus,
-  SubscriptionTier,
-  TraumaTopics,
-  TherapeuticThemes,
+  TraumaTopic,
+  TherapeuticTheme,
 }
+
+// Type aliases for convenience
+export type Role = UserRole
+export type TraumaTopics = TraumaTopic
+export type TherapeuticThemes = TherapeuticTheme
+export type SubscriptionTier = string // Remove if not used
 
 // Extended types with relations
 export type UserWithRelations = User & {

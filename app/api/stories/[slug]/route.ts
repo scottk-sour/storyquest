@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 // GET /api/stories/:slug - Get single story
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {

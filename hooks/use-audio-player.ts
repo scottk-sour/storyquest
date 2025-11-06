@@ -41,11 +41,11 @@ export function useAudioPlayer(audioUrl?: string) {
       onpause: () => {
         setIsPlaying(false)
       },
-      onloaderror: (id, error) => {
+      onloaderror: (_id, error) => {
         console.error('Audio load error:', error)
         setIsLoaded(false)
       },
-      onplayerror: (id, error) => {
+      onplayerror: (_id, error) => {
         console.error('Audio play error:', error)
         setIsPlaying(false)
       },

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
-import { Prisma } from '@prisma/client'
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library'
 
 // Custom error class for application errors
 export class AppError extends Error {
@@ -94,7 +97,7 @@ export function handleApiError(error: unknown): NextResponse<ErrorResponse> {
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {
-    const details = error.errors.reduce((acc, err) => {
+    const details = error.issues.reduce((acc, err) => {
       const path = err.path.join('.')
       acc[path] = err.message
       return acc
@@ -107,7 +110,7 @@ export function handleApiError(error: unknown): NextResponse<ErrorResponse> {
   }
 
   // Handle Prisma errors
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error instanceof PrismaClientKnownRequestError) {
     // Unique constraint violation
     if (error.code === 'P2002') {
       const field = (error.meta?.target as string[])?.join(', ') || 'field'
@@ -141,7 +144,7 @@ export function handleApiError(error: unknown): NextResponse<ErrorResponse> {
   }
 
   // Handle Prisma validation errors
-  if (error instanceof Prisma.PrismaClientValidationError) {
+  if (error instanceof PrismaClientValidationError) {
     return NextResponse.json(
       formatErrorResponse('Invalid data format. Please check your input.', 'VALIDATION_ERROR'),
       { status: 400 }

@@ -20,11 +20,11 @@ interface StoryReaderProps {
 }
 
 export function StoryReader({
-  storyId,
+  storyId: _storyId,
   sessionId,
   content,
   audioFiles = {},
-  childId,
+  childId: _childId,
   onComplete,
   onExit,
 }: StoryReaderProps) {

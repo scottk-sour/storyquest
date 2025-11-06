@@ -34,22 +34,22 @@ export default async function DashboardPage() {
 
   const totalChildren = children.length
   const totalStories = children.reduce(
-    (acc, child) => acc + child.readingSessions.length,
+    (acc: number, child: any) => acc + child.readingSessions.length,
     0
   )
   const totalAchievements = children.reduce(
-    (acc, child) => acc + child.achievements.length,
+    (acc: number, child: any) => acc + child.achievements.length,
     0
   )
 
   // Calculate this week's reading
   const oneWeekAgo = new Date()
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-  const thisWeekStories = children.reduce((acc, child) => {
+  const thisWeekStories = children.reduce((acc: number, child: any) => {
     return (
       acc +
       child.readingSessions.filter(
-        (session) =>
+        (session: any) =>
           session.completedAt && session.completedAt >= oneWeekAgo
       ).length
     )
@@ -167,7 +167,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {children.slice(0, 3).map((child) => (
+              {children.slice(0, 3).map((child: any) => (
                 <Link
                   key={child.id}
                   href={`/children/${child.id}`}
