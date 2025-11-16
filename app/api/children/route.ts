@@ -6,7 +6,7 @@ import { getAgeGroup } from '@/lib/utils'
 import { handleApiError, successResponse } from '@/lib/api-errors'
 
 // GET /api/children - List all children for current user
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await requireAuth()
 
