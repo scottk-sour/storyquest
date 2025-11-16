@@ -1,152 +1,79 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
-import { updateSessionSchema, completeSessionSchema } from '@/lib/validations/story'
-import { z } from 'zod'
+import { childSchema } from '@/lib/validations/child'
+import { getAgeGroup } from '@/lib/utils'
+import { handleApiError, successResponse } from '@/lib/api-errors'
 
-// PATCH /api/reading-sessions/:id - Update session progress
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// GET /api/children - List all children for current user
+export async function GET(_request: NextRequest) {
   try {
-    const { id } = await params
     const session = await requireAuth()
 
-    // Verify session belongs to user
-    const readingSession = await prisma.readingSession.findFirst({
-      where: {
-        id,
-        child: {
-          userId: session.user.id,
+    const children = await prisma.child.findMany({
+      where: { userId: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        age: true,
+        avatar: true,
+        ageGroup: true,
+        careStatus: true,
+        careStatusVerified: true,
+        createdAt: true,
+        readingSessions: {
+          where: { completedAt: { not: null } },
+          select: { id: true },
         },
       },
+      orderBy: { createdAt: 'desc' },
     })
 
-    if (!readingSession) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    }
+    // Add reading stats
+    const childrenWithStats = children.map((child) => ({
+      ...child,
+      storiesCompleted: child.readingSessions.length,
+      readingSessions: undefined, // Remove from response
+    }))
 
-    const body = await request.json()
-    const validated = updateSessionSchema.parse(body)
-
-    // Update session
-    const updated = await prisma.readingSession.update({
-      where: { id },
-      data: {
-        choicesMade: validated.choicesMade,
-        nodesVisited: validated.nodesVisited,
-      },
-    })
-
-    return NextResponse.json({ session: updated })
+    return successResponse({ children: childrenWithStats })
   } catch (error) {
-    if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    console.error('PATCH /api/reading-sessions/:id error:', error)
-    return NextResponse.json(
-      { error: 'Failed to update session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
-// POST /api/reading-sessions/:id/complete - Complete session
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+// POST /api/children - Create new child
+export async function POST(request: NextRequest) {
   try {
-    const { id } = await params
     const session = await requireAuth()
 
-    // Verify session belongs to user
-    const readingSession = await prisma.readingSession.findFirst({
-      where: {
-        id,
-        child: {
-          userId: session.user.id,
-        },
-      },
-      include: {
-        child: true,
-      },
-    })
-
-    if (!readingSession) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    }
-
     const body = await request.json()
-    const validated = completeSessionSchema.parse(body)
+    const validated = childSchema.parse(body)
 
-    // Calculate duration
-    const duration = Math.floor(
-      (new Date().getTime() - readingSession.startedAt.getTime()) / 1000
-    )
+    // Auto-determine age group if not provided
+    const ageGroup = validated.ageGroup || getAgeGroup(validated.age)
 
-    // Complete session
-    const completed = await prisma.readingSession.update({
-      where: { id },
+    const child = await prisma.child.create({
       data: {
-        completedAt: new Date(),
-        duration,
-        endingReached: validated.endingReached,
-        emotionalResponse: validated.emotionalResponse,
-        helpfulRating: validated.helpfulRating,
+        ...validated,
+        ageGroup,
+        userId: session.user.id,
+        careStatusVerified: false, // Needs verification
+      },
+      select: {
+        id: true,
+        name: true,
+        age: true,
+        avatar: true,
+        ageGroup: true,
+        careStatus: true,
+        careStatusVerified: true,
+        createdAt: true,
       },
     })
 
-    // Check for achievements (simplified - can be expanded)
-    const completedCount = await prisma.readingSession.count({
-      where: {
-        childId: readingSession.childId,
-        completedAt: { not: null },
-      },
-    })
-
-    // Award "First Story" achievement
-    if (completedCount === 1) {
-      const firstStoryAchievement = await prisma.achievement.findFirst({
-        where: { name: 'First Story' },
-      })
-
-      if (firstStoryAchievement) {
-        await prisma.childAchievement.create({
-          data: {
-            childId: readingSession.childId,
-            achievementId: firstStoryAchievement.id,
-          },
-        })
-      }
-    }
-
-    return NextResponse.json({ session: completed })
+    return successResponse({ child }, 201)
   } catch (error) {
-    if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
-        { status: 400 }
-      )
-    }
-
-    console.error('POST /api/reading-sessions/:id/complete error:', error)
-    return NextResponse.json(
-      { error: 'Failed to complete session' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
