@@ -24,7 +24,7 @@ export function StoryReader({
   sessionId,
   content,
   audioFiles = {},
-  childId,
+  childId: _childId,
   onComplete,
   onExit,
 }: StoryReaderProps) {
