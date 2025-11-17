@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { handleApiError, successResponse } from '@/lib/api-errors'
-import { AgeGroup } from '@prisma/client'
+import { AgeGroup, StoryCategory } from '@prisma/client'
 
 // GET /api/stories - List published stories
 export async function GET(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       where: {
         status: 'PUBLISHED',
         ...(ageGroup && { ageGroup: { has: ageGroup as AgeGroup } }),
-        ...(category && { category }),
+        ...(category && { category: category as StoryCategory }),
         ...(featured === 'true' && { featured: true }),
       },
       select: {
