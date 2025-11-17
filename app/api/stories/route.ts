@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { handleApiError, successResponse } from '@/lib/api-errors'
 import { AgeGroup } from '@prisma/client'
-import { AgeGroup } from '@prisma/client'
 
 // GET /api/stories - List published stories
 export async function GET(request: NextRequest) {
