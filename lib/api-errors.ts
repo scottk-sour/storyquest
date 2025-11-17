@@ -94,7 +94,7 @@ export function handleApiError(error: unknown): NextResponse<ErrorResponse> {
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {
-    const details = error.errors.reduce((acc, err) => {
+    const details = error.issues.reduce((acc, err) => {
       const path = err.path.join('.')
       acc[path] = err.message
       return acc
