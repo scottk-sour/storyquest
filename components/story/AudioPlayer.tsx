@@ -10,7 +10,7 @@ interface AudioPlayerProps {
   onEnded?: () => void
 }
 
-export function AudioPlayer({ audioUrl, autoPlay = false, onEnded: _onEnded: _onEnded }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, autoPlay = false, onEnded: _onEnded }: AudioPlayerProps) {
   const { play, pause, changeSpeed, isPlaying, isLoaded, progress, speed } =
     useAudioPlayer(audioUrl)
 
