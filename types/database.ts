@@ -8,9 +8,7 @@ import {
   ConversationGuide,
   AgeGroup,
   CareStatus,
-  Role,
   StoryStatus,
-  SubscriptionTier,
   TraumaTopics,
   TherapeuticThemes,
 } from '@prisma/client'
@@ -19,9 +17,7 @@ import {
 export {
   AgeGroup,
   CareStatus,
-  Role,
   StoryStatus,
-  SubscriptionTier,
   TraumaTopics,
   TherapeuticThemes,
 }
@@ -31,7 +27,7 @@ export type UserWithRelations = User & {
   children?: Child[]
   professional?: Professional | null
   subscription?: {
-    tier: SubscriptionTier
+    tier: string
     stripeCustomerId: string | null
     stripeSubscriptionId: string | null
   } | null
@@ -186,6 +182,7 @@ export function isSessionWithDetails(
 ): session is ReadingSessionWithDetails {
   return 'child' in session && 'story' in session
 }
+
 
 
 
