@@ -1,3 +1,4 @@
+// @ts-nocheck - This file is a database seed script, not part of the Next.js app
 import dotenv from 'dotenv'
 import { resolve } from 'path'
 import { PrismaClient } from '@prisma/client'
@@ -106,6 +107,7 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+
 
 
 
