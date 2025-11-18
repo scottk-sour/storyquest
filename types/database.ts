@@ -3,14 +3,9 @@ import {
   Child,
   Story,
   ReadingSession,
-  Achievement,
-  ChildAchievement,
   Professional,
   TherapeuticNote,
   ConversationGuide,
-  SafeguardingLog,
-  InstitutionalLicense,
-  QuizResult,
   AgeGroup,
   CareStatus,
   Role,
@@ -191,4 +186,5 @@ export function isSessionWithDetails(
 ): session is ReadingSessionWithDetails {
   return 'child' in session && 'story' in session
 }
+
 
