@@ -191,3 +191,4 @@ export function isSessionWithDetails(
 ): session is ReadingSessionWithDetails {
   return 'child' in session && 'story' in session
 }
+
